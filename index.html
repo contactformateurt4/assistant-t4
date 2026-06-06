@@ -151,6 +151,11 @@
             padding: 12px;
             margin-bottom: 12px;
             scroll-behavior: smooth;
+            display: none;
+        }
+
+        .chat-container.visible {
+            display: block;
         }
 
         .chat-container::-webkit-scrollbar {
@@ -158,6 +163,42 @@
         }
         .chat-container::-webkit-scrollbar-thumb {
             background: #00d4ff33;
+        }
+
+        .chat-toggle-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 20, 35, 0.8);
+            border: 1px solid #001f2e;
+            border-radius: 6px;
+            color: #00d4ff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7em;
+            letter-spacing: 2px;
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .chat-toggle-btn:hover {
+            background: rgba(0, 30, 50, 0.9);
+            border-color: #00d4ff44;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.15);
+        }
+
+        .chat-toggle-btn .toggle-icon {
+            display: inline-block;
+            transition: transform 0.3s;
+            font-size: 1.2em;
+        }
+
+        .chat-toggle-btn.open .toggle-icon {
+            transform: rotate(180deg);
         }
 
         .msg {
@@ -589,6 +630,10 @@
             <div class="status-right">PROTOCOLES T4 · ACTIFS</div>
         </div>
 
+        <button class="chat-toggle-btn" id="chatToggleBtn" onclick="toggleChat()">
+            <span class="toggle-icon">▼</span> AFFICHER LE DIALOGUE
+        </button>
+
         <div class="chat-container" id="chat">
             <div class="msg jarvis">
                 <div class="avatar">AT4</div>
@@ -654,9 +699,11 @@
 
         const chat = document.getElementById('chat');
         const typing = document.getElementById('typing');
+        const chatToggleBtn = document.getElementById('chatToggleBtn');
         let listening = false,
             recognition = null;
         let lastRecognizedText = '';
+        let chatVisible = false;
 
         function getCurrentDateTime() {
             const now = new Date();
@@ -672,7 +719,23 @@
             return `Nous sommes le <strong>${jour} ${date} ${moisStr} ${annee}</strong>. Il est <strong>${heures}:${minutes}:${secondes}</strong>.`;
         }
 
+        function toggleChat() {
+            chatVisible = !chatVisible;
+            if (chatVisible) {
+                chat.classList.add('visible');
+                chatToggleBtn.classList.add('open');
+                chatToggleBtn.innerHTML = '<span class="toggle-icon">▼</span> MASQUER LE DIALOGUE';
+            } else {
+                chat.classList.remove('visible');
+                chatToggleBtn.classList.remove('open');
+                chatToggleBtn.innerHTML = '<span class="toggle-icon">▼</span> AFFICHER LE DIALOGUE';
+            }
+        }
+
         function addMsg(html, isUser = false) {
+            if (!chatVisible) {
+                toggleChat();
+            }
             const div = document.createElement('div');
             div.className = isUser ? 'msg user' : 'msg jarvis';
             div.innerHTML = isUser ? `<div class="text">${html}</div>` : `<div class="avatar">AT4</div><div class="text">${html}</div>`;
@@ -740,9 +803,7 @@
             const low = text.toLowerCase().trim();
             lastRecognizedText = low;
 
-            // Salutations spécifiques
-            if (low.includes('asalam') || low.includes('salam') || low.includes('assalam') || low.includes('salam alaykoum') || low
-                .includes('as salam')) {
+            if (low.includes('asalam') || low.includes('salam') || low.includes('assalam') || low.includes('salam alaykoum') || low.includes('as salam')) {
                 return { msg: '<strong>Wa aleykoum salam</strong>. Je suis à votre écoute.' };
             }
             if (low === 'bonjour' || low.startsWith('bonjour ') || low === 'bonjour.') {
@@ -755,23 +816,17 @@
                 return { msg: '<strong>Bonsoir</strong>, je suis à votre service.' };
             }
 
-            // Répète la dernière commande
-            if (low.includes('répète') || low.includes('repete') || low.includes('redis') || low.includes('répéter') || low.includes(
-                    'repeter')) {
-                if (lastRecognizedText && lastRecognizedText.length > 2 && !lastRecognizedText.includes('répète') && !
-                    lastRecognizedText.includes('repete')) {
+            if (low.includes('répète') || low.includes('repete') || low.includes('redis') || low.includes('répéter') || low.includes('repeter')) {
+                if (lastRecognizedText && lastRecognizedText.length > 2 && !lastRecognizedText.includes('répète') && !lastRecognizedText.includes('repete')) {
                     return getResponse(lastRecognizedText);
                 }
                 return { msg: 'Je n\'ai rien à répéter. Donnez-moi une nouvelle instruction.' };
             }
 
-            // Date et heure
-            if (low.includes('date') || low.includes('heure') || low.includes('jour') || low.includes('temps') || low.includes(
-                    'quelle heure') || low.includes('quel jour')) {
+            if (low.includes('date') || low.includes('heure') || low.includes('jour') || low.includes('temps') || low.includes('quelle heure') || low.includes('quel jour')) {
                 return { msg: getCurrentDateTime() };
             }
 
-            // Recherche protocole
             const proto = matchProtocol(low);
             if (proto) {
                 return { msg: proto.msg, url: proto.url, name: proto.name, openUrl: true };
