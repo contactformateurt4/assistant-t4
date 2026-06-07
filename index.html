@@ -703,9 +703,11 @@
         let listening = false,
             recognition = null;
         let lastRecognizedText = '';
+        let lastResponseText = '';
         let chatVisible = false;
         let synth = window.speechSynthesis;
         let currentUtterance = null;
+        let processingVoice = false;
 
         function speak(text) {
             if (!synth) return;
@@ -764,9 +766,6 @@
         }
 
         function addMsg(html, isUser = false) {
-            if (!chatVisible) {
-                toggleChat();
-            }
             const div = document.createElement('div');
             div.className = isUser ? 'msg user' : 'msg jarvis';
             div.innerHTML = isUser ? `<div class="text">${html}</div>` : `<div class="avatar">AT4</div><div class="text">${html}</div>`;
@@ -795,15 +794,19 @@
 
         function tileClick(name, url) {
             const proto = PROTOCOLS.find(p => p.name === name);
-            addMsg(name, true);
-            showTyping();
-            setTimeout(() => { hideTyping();
-                const msg = proto ? proto.msg : `Accès au module <strong>${name}</strong>.`;
-                addMsg(msg);
-                addLink(name, url);
-                const cleanMsg = msg.replace(/<[^>]*>/g, '');
-                speak(cleanMsg);
-                window.open(url, '_blank'); }, 900);
+            if (chatVisible) {
+                addMsg(name, true);
+                showTyping();
+                setTimeout(() => {
+                    hideTyping();
+                    const msg = proto ? proto.msg : `Accès au module <strong>${name}</strong>.`;
+                    addMsg(msg);
+                    addLink(name, url);
+                }, 900);
+            }
+            const cleanMsg = proto ? proto.msg.replace(/<[^>]*>/g, '') : `Accès au module ${name}.`;
+            speak(cleanMsg);
+            window.open(url, '_blank');
         }
 
         function matchProtocol(text) {
@@ -816,28 +819,58 @@
             const val = input.value.trim();
             if (!val) return;
             input.value = '';
-            processInput(val);
+            processInput(val, true);
         }
 
-        function processInput(text) {
-            addMsg(text, true);
-            showTyping();
-            setTimeout(() => {
-                hideTyping();
-                const response = getResponse(text);
-                addMsg(response.msg);
-                if (response.speakText) {
-                    speak(response.speakText);
-                }
-                if (response.url && response.name) {
-                    addLink(response.name, response.url);
-                    if (response.openUrl) setTimeout(() => window.open(response.url, '_blank'), 300);
-                }
-            }, 1200);
+        function processInput(text, fromInput = false) {
+            if (processingVoice && !fromInput) return;
+
+            if (!fromInput) {
+                processingVoice = true;
+            }
+
+            if (chatVisible || fromInput) {
+                addMsg(text, true);
+                showTyping();
+            }
+
+            const response = getResponse(text);
+
+            if (response.speakText && response.speakText !== lastResponseText) {
+                lastResponseText = response.speakText;
+                speak(response.speakText);
+            } else if (response.speakText && response.speakText === lastResponseText && !fromInput) {
+                processingVoice = false;
+                return;
+            } else if (response.speakText) {
+                speak(response.speakText);
+                lastResponseText = response.speakText;
+            }
+
+            if (chatVisible || fromInput) {
+                setTimeout(() => {
+                    hideTyping();
+                    addMsg(response.msg);
+                    if (response.url && response.name) {
+                        addLink(response.name, response.url);
+                        if (response.openUrl) setTimeout(() => window.open(response.url, '_blank'), 300);
+                    }
+                }, 1200);
+            } else if (response.url && response.name && response.openUrl) {
+                setTimeout(() => window.open(response.url, '_blank'), 300);
+            }
+
+            if (!fromInput) {
+                setTimeout(() => { processingVoice = false; }, 2000);
+            }
         }
 
         function getResponse(text) {
             const low = text.toLowerCase().trim();
+
+            if (low === lastRecognizedText && !chatVisible) {
+                return { msg: '', speakText: '' };
+            }
             lastRecognizedText = low;
 
             if (low.includes('asalam') || low.includes('salam') || low.includes('assalam') || low.includes('salam alaykoum') || low.includes('as salam') || low.includes('salam aleykoum') || low.includes('salem')) {
@@ -892,6 +925,7 @@
 
             if (listening) {
                 listening = false;
+                processingVoice = false;
                 recognition && recognition.stop();
                 holoBtn.classList.remove('listening');
                 label.textContent = 'VOCAL T4';
@@ -900,12 +934,13 @@
                     synth.cancel();
                     currentUtterance = null;
                 }
+                lastResponseText = '';
                 return;
             }
 
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 const msg = 'Reconnaissance vocale non disponible sur ce navigateur. Utilisez Chrome.';
-                addMsg(msg);
+                if (chatVisible) addMsg(msg);
                 speak('Reconnaissance vocale non disponible sur ce navigateur. Utilisez Chrome.');
                 return;
             }
@@ -915,7 +950,7 @@
                 stream.getTracks().forEach(t => t.stop());
             } catch (err) {
                 const msg = '❌ Accès au microphone refusé. Allez dans les paramètres de votre navigateur, autorisations, microphone, puis autoriser pour ce site.';
-                addMsg(msg);
+                if (chatVisible) addMsg(msg);
                 speak('Accès au microphone refusé. Vérifiez les paramètres de votre navigateur.');
                 return;
             }
@@ -937,16 +972,18 @@
             recognition.onresult = (e) => {
                 const t = e.results[e.results.length - 1][0].transcript.trim();
                 if (!t || t.length < 1) return;
-                processInput(t);
+                if (t === lastRecognizedText) return;
+                processInput(t, false);
                 document.getElementById('userInput').value = '';
             };
 
             recognition.onerror = (e) => {
                 if (e.error === 'not-allowed') {
                     const msg = '❌ Microphone bloqué. Autorisez l\'accès dans les paramètres du navigateur puis réessayez.';
-                    addMsg(msg);
+                    if (chatVisible) addMsg(msg);
                     speak('Microphone bloqué. Autorisez l\'accès dans les paramètres du navigateur.');
                     listening = false;
+                    processingVoice = false;
                     holoBtn.classList.remove('listening');
                     label.textContent = 'VOCAL T4';
                     label.style.color = 'rgba(0,200,255,0.8)';
@@ -963,6 +1000,7 @@
                 if (listening) {
                     try { recognition.start(); } catch (e) {
                         listening = false;
+                        processingVoice = false;
                         holoBtn.classList.remove('listening');
                         label.textContent = 'VOCAL T4';
                         label.style.color = 'rgba(0,200,255,0.8)';
