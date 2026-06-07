@@ -704,6 +704,24 @@
             recognition = null;
         let lastRecognizedText = '';
         let chatVisible = false;
+        let synth = window.speechSynthesis;
+        let currentUtterance = null;
+
+        function speak(text) {
+            if (!synth) return;
+            if (currentUtterance) {
+                synth.cancel();
+            }
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'fr-FR';
+            utterance.rate = 0.95;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            currentUtterance = utterance;
+            utterance.onend = () => { currentUtterance = null; };
+            utterance.onerror = () => { currentUtterance = null; };
+            synth.speak(utterance);
+        }
 
         function getCurrentDateTime() {
             const now = new Date();
@@ -717,6 +735,19 @@
             const minutes = String(now.getMinutes()).padStart(2, '0');
             const secondes = String(now.getSeconds()).padStart(2, '0');
             return `Nous sommes le <strong>${jour} ${date} ${moisStr} ${annee}</strong>. Il est <strong>${heures}:${minutes}:${secondes}</strong>.`;
+        }
+
+        function getCurrentDateTimeSpoken() {
+            const now = new Date();
+            const jours = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+            const mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+            const jour = jours[now.getDay()];
+            const date = now.getDate();
+            const moisStr = mois[now.getMonth()];
+            const annee = now.getFullYear();
+            const heures = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            return `Nous sommes le ${jour} ${date} ${moisStr} ${annee}. Il est ${heures} heures ${minutes}.`;
         }
 
         function toggleChat() {
@@ -767,8 +798,11 @@
             addMsg(name, true);
             showTyping();
             setTimeout(() => { hideTyping();
-                addMsg(proto ? proto.msg : `Accès au module <strong>${name}</strong>.`);
+                const msg = proto ? proto.msg : `Accès au module <strong>${name}</strong>.`;
+                addMsg(msg);
                 addLink(name, url);
+                const cleanMsg = msg.replace(/<[^>]*>/g, '');
+                speak(cleanMsg);
                 window.open(url, '_blank'); }, 900);
         }
 
@@ -792,6 +826,9 @@
                 hideTyping();
                 const response = getResponse(text);
                 addMsg(response.msg);
+                if (response.speakText) {
+                    speak(response.speakText);
+                }
                 if (response.url && response.name) {
                     addLink(response.name, response.url);
                     if (response.openUrl) setTimeout(() => window.open(response.url, '_blank'), 300);
@@ -803,36 +840,50 @@
             const low = text.toLowerCase().trim();
             lastRecognizedText = low;
 
-            if (low.includes('asalam') || low.includes('salam') || low.includes('assalam') || low.includes('salam alaykoum') || low.includes('as salam')) {
-                return { msg: '<strong>Wa aleykoum salam</strong>. Je suis à votre écoute.' };
+            if (low.includes('asalam') || low.includes('salam') || low.includes('assalam') || low.includes('salam alaykoum') || low.includes('as salam') || low.includes('salam aleykoum') || low.includes('salem')) {
+                const msg = '<strong>Wa aleykoum salam</strong>. Je suis à votre écoute.';
+                return { msg: msg, speakText: 'Wa aleykoum salam. Je suis à votre écoute.' };
             }
-            if (low === 'bonjour' || low.startsWith('bonjour ') || low === 'bonjour.') {
-                return { msg: '<strong>Bonjour</strong>, ravie de me rendre utile. Que puis-je pour vous ?' };
+            if (low === 'bonjour' || low.startsWith('bonjour ') || low === 'bonjour.' || low === 'bonjour,') {
+                const msg = '<strong>Bonjour</strong>, ravie de me rendre utile. Que puis-je pour vous ?';
+                return { msg: msg, speakText: 'Bonjour, ravie de me rendre utile. Que puis-je pour vous ?' };
             }
-            if (low === 'salut' || low.startsWith('salut ') || low === 'hey' || low === 'coucou') {
-                return { msg: '<strong>Hey boss</strong> ! Dites-moi ce dont vous avez besoin.' };
+            if (low === 'salut' || low.startsWith('salut ') || low === 'hey' || low === 'coucou' || low === 'hello') {
+                const msg = '<strong>Hey boss</strong> ! Dites-moi ce dont vous avez besoin.';
+                return { msg: msg, speakText: 'Hey boss. Dites-moi ce dont vous avez besoin.' };
             }
             if (low === 'bonsoir' || low.startsWith('bonsoir ')) {
-                return { msg: '<strong>Bonsoir</strong>, je suis à votre service.' };
+                const msg = '<strong>Bonsoir</strong>, je suis à votre service.';
+                return { msg: msg, speakText: 'Bonsoir, je suis à votre service.' };
+            }
+            if (low === 'merci' || low === 'merci beaucoup' || low.startsWith('merci ')) {
+                const msg = '<strong>Je vous en prie</strong>. À votre service.';
+                return { msg: msg, speakText: 'Je vous en prie. À votre service.' };
             }
 
             if (low.includes('répète') || low.includes('repete') || low.includes('redis') || low.includes('répéter') || low.includes('repeter')) {
-                if (lastRecognizedText && lastRecognizedText.length > 2 && !lastRecognizedText.includes('répète') && !lastRecognizedText.includes('repete')) {
+                if (lastRecognizedText && lastRecognizedText.length > 2 && !lastRecognizedText.includes('répète') && !lastRecognizedText.includes('repete') && !lastRecognizedText.includes('redis') && !lastRecognizedText.includes('répéter') && !lastRecognizedText.includes('repeter')) {
                     return getResponse(lastRecognizedText);
                 }
-                return { msg: 'Je n\'ai rien à répéter. Donnez-moi une nouvelle instruction.' };
+                const msg = 'Je n\'ai rien à répéter. Donnez-moi une nouvelle instruction.';
+                return { msg: msg, speakText: 'Je n\'ai rien à répéter. Donnez-moi une nouvelle instruction.' };
             }
 
             if (low.includes('date') || low.includes('heure') || low.includes('jour') || low.includes('temps') || low.includes('quelle heure') || low.includes('quel jour')) {
-                return { msg: getCurrentDateTime() };
+                const msg = getCurrentDateTime();
+                const spoken = getCurrentDateTimeSpoken();
+                return { msg: msg, speakText: spoken };
             }
 
             const proto = matchProtocol(low);
             if (proto) {
-                return { msg: proto.msg, url: proto.url, name: proto.name, openUrl: true };
+                const cleanMsg = proto.msg.replace(/<[^>]*>/g, '');
+                return { msg: proto.msg, speakText: cleanMsg, url: proto.url, name: proto.name, openUrl: true };
             }
 
-            return { msg: 'Je n\'ai pas identifié de protocole. Précisez votre problème — ex: <em>"frein isolé calcul vitesse"</em>, <em>"boîte chaude"</em>, <em>"porte bloquée"</em>...' };
+            const msg = 'Je n\'ai pas identifié de protocole. Précisez votre problème — ex: <em>"frein isolé calcul vitesse"</em>, <em>"boîte chaude"</em>, <em>"porte bloquée"</em>...';
+            const spoken = 'Je n\'ai pas identifié de protocole. Précisez votre problème.';
+            return { msg: msg, speakText: spoken };
         }
 
         async function toggleVoice() {
@@ -842,11 +893,20 @@
             if (listening) {
                 listening = false;
                 recognition && recognition.stop();
+                holoBtn.classList.remove('listening');
+                label.textContent = 'VOCAL T4';
+                label.style.color = 'rgba(0,200,255,0.8)';
+                if (currentUtterance) {
+                    synth.cancel();
+                    currentUtterance = null;
+                }
                 return;
             }
 
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                addMsg('Reconnaissance vocale non disponible sur ce navigateur. Utilisez Chrome.');
+                const msg = 'Reconnaissance vocale non disponible sur ce navigateur. Utilisez Chrome.';
+                addMsg(msg);
+                speak('Reconnaissance vocale non disponible sur ce navigateur. Utilisez Chrome.');
                 return;
             }
 
@@ -854,7 +914,9 @@
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 stream.getTracks().forEach(t => t.stop());
             } catch (err) {
-                addMsg('❌ Accès au microphone refusé. Allez dans les paramètres de votre navigateur → Autorisations → Microphone → Autoriser pour ce site.');
+                const msg = '❌ Accès au microphone refusé. Allez dans les paramètres de votre navigateur, autorisations, microphone, puis autoriser pour ce site.';
+                addMsg(msg);
+                speak('Accès au microphone refusé. Vérifiez les paramètres de votre navigateur.');
                 return;
             }
 
@@ -870,6 +932,7 @@
                 holoBtn.classList.add('listening');
                 label.textContent = 'ÉCOUTE...';
                 label.style.color = 'rgba(255,80,80,0.9)';
+                speak('Je vous écoute.');
             };
 
             recognition.onresult = (e) => {
@@ -881,13 +944,17 @@
 
             recognition.onerror = (e) => {
                 if (e.error === 'not-allowed') {
-                    addMsg('❌ Microphone bloqué. Autorisez l\'accès dans les paramètres du navigateur puis réessayez.');
+                    const msg = '❌ Microphone bloqué. Autorisez l\'accès dans les paramètres du navigateur puis réessayez.';
+                    addMsg(msg);
+                    speak('Microphone bloqué. Autorisez l\'accès dans les paramètres du navigateur.');
                     listening = false;
                     holoBtn.classList.remove('listening');
                     label.textContent = 'VOCAL T4';
                     label.style.color = 'rgba(0,200,255,0.8)';
                 } else if (e.error === 'no-speech') {
                     // silence, on continue
+                } else if (e.error === 'aborted') {
+                    // normal lors de l'arrêt
                 } else {
                     console.log('Erreur micro:', e.error);
                 }
@@ -910,6 +977,13 @@
 
             recognition.start();
         }
+
+        document.addEventListener('click', function(e) {
+            if (!synth) return;
+            if (synth.speaking && !e.target.closest('.voice-holo-btn') && !e.target.closest('.voice-center-container')) {
+                // garder la synthèse active
+            }
+        }, true);
     </script>
 </body>
 </html>
