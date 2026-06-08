@@ -93,27 +93,27 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;backg
 <div class="status-bar"><div style="display:flex;align-items:center;gap:6px"><div class="status-dot" id="statusDot"></div><span class="status-text" id="statusText">SYSTÈME EN LIGNE</span></div><div class="status-right">PROTOCOLES T4 · ACTIFS</div></div>
 <button class="chat-toggle-btn" id="chatToggleBtn"><span class="toggle-icon">▼</span> AFFICHER LE DIALOGUE</button>
 <div class="chat-container" id="chat"><div class="msg jarvis"><div class="avatar">AT4</div><div class="text">Bonjour. Je suis votre <strong>Assistant T4</strong>. Dites-moi votre problème ou parlez directement — par exemple : <em>"J'ai isolé un frein"</em>, <em>"Panne de porte"</em>, ou <em>"Procédure boîte chaude"</em>. Je vous guide vers le bon protocole.<br><a class="action-link" href="https://sites.google.com/view/expert-ios/expert-ios" target="_blank">⟶ Accès rapide iOS ↗</a></div></div><div class="typing" id="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
-<div class="input-zone"><input class="input-box" id="userInput" placeholder="Parlez ou écrivez votre problème..." onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn send" onclick="sendMsg()">ENVOYER</button></div>
+<div class="input-zone"><input class="input-box" id="userInput" placeholder="Parlez ou écrivez votre problème..." onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn send" id="sendBtn">ENVOYER</button></div>
 <div class="grid">
-<div class="tile" onclick="tileClick('iOS','https://sites.google.com/view/expert-ios/expert-ios')"><span class="tile-icon">🔍</span><div class="tile-name">CODES iOS</div><div class="tile-bar"></div></div>
-<div class="tile" onclick="tileClick('Page 499','https://sites.google.com/view/page-499/page-499')"><span class="tile-icon">⚙️</span><div class="tile-name">PAGE 499</div><div class="tile-bar"></div></div>
-<div class="tile" onclick="tileClick('Guide SI','https://sites.google.com/view/guide-si/guide-pour-les-si')"><span class="tile-icon">🚦</span><div class="tile-name">GUIDE SI</div><div class="tile-bar"></div></div>
-<div class="tile" onclick="tileClick('Pose de SAM','https://sites.google.com/view/pose-de-sam/sam')"><span class="tile-icon">🚩</span><div class="tile-name">POSE SAM</div><div class="tile-bar"></div></div>
-<div class="tile alert" onclick="tileClick('Porte Dualis','https://zbrfe.itch.io/condamner-une-porte-dualis')"><span class="tile-icon">🚪</span><div class="tile-name">PORTE DUALIS</div><div class="tile-bar"></div></div>
-<div class="tile alert" onclick="tileClick('Assistant Secours','https://zbrfe.itch.io/assistant-secours-t4')"><span class="tile-icon">🚨</span><div class="tile-name">SECOURS</div><div class="tile-bar"></div></div>
-<div class="tile" onclick="tileClick('Assistant UM','https://zbrfe.itch.io/assistant-um-t4')"><span class="tile-icon">🚆</span><div class="tile-name">ASSISTANT UM</div><div class="tile-bar"></div></div>
-<div class="tile alert" onclick="tileClick('Boîte Chaude','https://sites.google.com/view/boite-chaude/boite-chaude')"><span class="tile-icon">🔥</span><div class="tile-name">BOÎTE CHAUDE</div><div class="tile-bar"></div></div>
-<div class="tile" onclick="tileClick('MTI','https://sites.google.com/view/mtidualis/mti')"><span class="tile-icon">📄</span><div class="tile-name">MTI</div><div class="tile-bar"></div></div>
-<div class="tile" onclick="tileClick('Clés Aiguilles','https://zbrfe.itch.io/cl-daiguille')"><span class="tile-icon">🔑</span><div class="tile-name">CLÉS AIGUILLES</div><div class="tile-bar"></div></div>
-<div class="tile" onclick="tileClick('Codes Accès','https://sites.google.com/view/codet4/code-dacces')"><span class="tile-icon">🔒</span><div class="tile-name">CODES ACCÈS</div><div class="tile-bar"></div></div>
-<div class="tile" onclick="tileClick('Astuces','https://sites.google.com/view/les-gestes-qui-depannent/les-gestes-qui-depannent')"><span class="tile-icon">💡</span><div class="tile-name">ASTUCES</div><div class="tile-bar"></div></div>
-<div class="tile" onclick="tileClick('Conduite Esbly','https://sites.google.com/view/mode-conduite-esbly/mode-conduite-esbly')"><span class="tile-icon">🧭</span><div class="tile-name">CONDUITE ESBLY</div><div class="tile-bar"></div></div>
-<div class="tile" onclick="tileClick('Constat','https://sites.google.com/view/constat-t4/constat')"><span class="tile-icon">🖊️</span><div class="tile-name">CONSTAT</div><div class="tile-bar"></div></div>
-<div class="tile" onclick="tileClick('Bulletin ADV/SI','https://sites.google.com/view/bulletin-adv-si/bulletin-de-franchissement-de-si')"><span class="tile-icon">📋</span><div class="tile-name">BULLETIN ADV/SI</div><div class="tile-bar"></div></div>
+<div class="tile" id="tile-ios"><span class="tile-icon">🔍</span><div class="tile-name">CODES iOS</div><div class="tile-bar"></div></div>
+<div class="tile" id="tile-499"><span class="tile-icon">⚙️</span><div class="tile-name">PAGE 499</div><div class="tile-bar"></div></div>
+<div class="tile" id="tile-si"><span class="tile-icon">🚦</span><div class="tile-name">GUIDE SI</div><div class="tile-bar"></div></div>
+<div class="tile" id="tile-sam"><span class="tile-icon">🚩</span><div class="tile-name">POSE SAM</div><div class="tile-bar"></div></div>
+<div class="tile alert" id="tile-porte"><span class="tile-icon">🚪</span><div class="tile-name">PORTE DUALIS</div><div class="tile-bar"></div></div>
+<div class="tile alert" id="tile-secours"><span class="tile-icon">🚨</span><div class="tile-name">SECOURS</div><div class="tile-bar"></div></div>
+<div class="tile" id="tile-um"><span class="tile-icon">🚆</span><div class="tile-name">ASSISTANT UM</div><div class="tile-bar"></div></div>
+<div class="tile alert" id="tile-bc"><span class="tile-icon">🔥</span><div class="tile-name">BOÎTE CHAUDE</div><div class="tile-bar"></div></div>
+<div class="tile" id="tile-mti"><span class="tile-icon">📄</span><div class="tile-name">MTI</div><div class="tile-bar"></div></div>
+<div class="tile" id="tile-cle"><span class="tile-icon">🔑</span><div class="tile-name">CLÉS AIGUILLES</div><div class="tile-bar"></div></div>
+<div class="tile" id="tile-code"><span class="tile-icon">🔒</span><div class="tile-name">CODES ACCÈS</div><div class="tile-bar"></div></div>
+<div class="tile" id="tile-astuce"><span class="tile-icon">💡</span><div class="tile-name">ASTUCES</div><div class="tile-bar"></div></div>
+<div class="tile" id="tile-esbly"><span class="tile-icon">🧭</span><div class="tile-name">CONDUITE ESBLY</div><div class="tile-bar"></div></div>
+<div class="tile" id="tile-constat"><span class="tile-icon">🖊️</span><div class="tile-name">CONSTAT</div><div class="tile-bar"></div></div>
+<div class="tile" id="tile-bulletin"><span class="tile-icon">📋</span><div class="tile-name">BULLETIN ADV/SI</div><div class="tile-bar"></div></div>
 </div>
 <div class="footer-credit">DÉVELOPPÉ PAR ZABER MOHAMMAD · SYSTÈME T4</div>
 </div>
-<div class="voice-center-container"><button class="voice-holo-btn" id="voiceHoloBtn" onclick="toggleVoice()" title="Assistant vocal T4"><span style="filter:drop-shadow(0 0 8px rgba(0,200,255,0.8))">🎙️</span></button><div class="voice-holo-label" id="voiceLabel">VOCAL T4</div></div>
+<div class="voice-center-container"><button class="voice-holo-btn" id="voiceHoloBtn" title="Assistant vocal T4"><span style="filter:drop-shadow(0 0 8px rgba(0,200,255,0.8))">🎙️</span></button><div class="voice-holo-label" id="voiceLabel">VOCAL T4</div></div>
 <script>
 // ==================== BASE DE DONNÉES PROTOCOLES ====================
 const PROTOCOLS=[
@@ -136,26 +136,114 @@ const PROTOCOLS=[
 // ==================== ÉTAT GLOBAL ====================
 let chatVisible=false,listening=false,recognition=null,lastRecognizedText='',lastResponseText='',processingVoice=false,currentUtterance=null;
 const synth=window.speechSynthesis,voiceSupport=!!synth;
-const chat=document.getElementById('chat'),typing=document.getElementById('typing'),chatToggleBtn=document.getElementById('chatToggleBtn'),voiceHoloBtn=document.getElementById('voiceHoloBtn'),voiceLabel=document.getElementById('voiceLabel'),statusDot=document.getElementById('statusDot'),statusText=document.getElementById('statusText');
 // ==================== FONCTIONS ====================
-function speak(text){if(!voiceSupport)return;if(currentUtterance){synth.cancel();currentUtterance=null}let x=text.replace(/<[^>]*>/g,'').replace(/&[a-z]+;/g,'');x=x.replace(/\bl'IOS\b/gi,"li oès");x=x.replace(/\bl'ios\b/gi,"li oès");x=x.replace(/\bun IOS\b/gi,"un i o s");x=x.replace(/\bd'IOS\b/gi,"d'i o s");x=x.replace(/\bdes IOS\b/gi,"des i o s");x=x.replace(/\bIOS\b/g,"i o s");x=x.replace(/\bios\b/g,"i o s");x=x.replace(/\bAEL\b/gi,"a e l");x=x.replace(/\bael\b/gi,"a e l");x=x.replace(/km\/h/gi,'kilomètres par heure');x=x.replace(/\bart\.\s*/gi,'article ');x=x.replace(/i o s\s*(\d)(\d)(\d)/gi,(_,a,b,c)=>'i o s '+parseInt(a+b+c,10));x=x.replace(/li oès\s*(\d)(\d)(\d)/gi,(_,a,b,c)=>'li oès '+parseInt(a+b+c,10));x=x.replace(/\b0+(\d+)/g,'$1');x=x.replace(/\s+/g,' ');const u=new SpeechSynthesisUtterance(x);u.lang='fr-FR';u.rate=0.95;u.pitch=1;u.volume=1;const v=synth.getVoices(),fv=v.find(z=>z.lang.startsWith('fr'));if(fv)u.voice=fv;currentUtterance=u;voiceHoloBtn.classList.add('speaking');voiceLabel.textContent='PAROLE...';voiceLabel.style.color='rgba(180,100,255,0.9)';u.onend=()=>{currentUtterance=null;voiceHoloBtn.classList.remove('speaking');if(listening){voiceLabel.textContent='ÉCOUTE...';voiceLabel.style.color='rgba(0,255,100,0.9)'}else{voiceLabel.textContent='VOCAL T4';voiceLabel.style.color='rgba(0,200,255,0.8)'}};u.onerror=()=>{currentUtterance=null;voiceHoloBtn.classList.remove('speaking');if(listening){voiceLabel.textContent='ÉCOUTE...';voiceLabel.style.color='rgba(0,255,100,0.9)'}else{voiceLabel.textContent='VOCAL T4';voiceLabel.style.color='rgba(0,200,255,0.8)'}};synth.speak(u)}
+function speak(text){if(!voiceSupport)return;if(currentUtterance){synth.cancel();currentUtterance=null}let x=text.replace(/<[^>]*>/g,'').replace(/&[a-z]+;/g,'');x=x.replace(/\bl'IOS\b/gi,"li oès");x=x.replace(/\bl'ios\b/gi,"li oès");x=x.replace(/\bun IOS\b/gi,"un i o s");x=x.replace(/\bd'IOS\b/gi,"d'i o s");x=x.replace(/\bdes IOS\b/gi,"des i o s");x=x.replace(/\bIOS\b/g,"i o s");x=x.replace(/\bios\b/g,"i o s");x=x.replace(/\bAEL\b/gi,"a e l");x=x.replace(/\bael\b/gi,"a e l");x=x.replace(/km\/h/gi,'kilomètres par heure');x=x.replace(/\bart\.\s*/gi,'article ');x=x.replace(/i o s\s*(\d)(\d)(\d)/gi,(_,a,b,c)=>'i o s '+parseInt(a+b+c,10));x=x.replace(/li oès\s*(\d)(\d)(\d)/gi,(_,a,b,c)=>'li oès '+parseInt(a+b+c,10));x=x.replace(/\b0+(\d+)/g,'$1');x=x.replace(/\s+/g,' ');const u=new SpeechSynthesisUtterance(x);u.lang='fr-FR';u.rate=0.95;u.pitch=1;u.volume=1;const v=synth.getVoices(),fv=v.find(z=>z.lang.startsWith('fr'));if(fv)u.voice=fv;currentUtterance=u;const vb=document.getElementById('voiceHoloBtn');const vl=document.getElementById('voiceLabel');vb.classList.add('speaking');vl.textContent='PAROLE...';vl.style.color='rgba(180,100,255,0.9)';u.onend=()=>{currentUtterance=null;vb.classList.remove('speaking');if(listening){vl.textContent='ÉCOUTE...';vl.style.color='rgba(0,255,100,0.9)'}else{vl.textContent='VOCAL T4';vl.style.color='rgba(0,200,255,0.8)'}};u.onerror=()=>{currentUtterance=null;vb.classList.remove('speaking');if(listening){vl.textContent='ÉCOUTE...';vl.style.color='rgba(0,255,100,0.9)'}else{vl.textContent='VOCAL T4';vl.style.color='rgba(0,200,255,0.8)'}};synth.speak(u)}
 function getCurrentDateTime(){const n=new Date();const js=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];const ms=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];return'Nous sommes le <strong>'+js[n.getDay()]+' '+n.getDate()+' '+ms[n.getMonth()]+' '+n.getFullYear()+'</strong>. Il est <strong>'+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0')+'</strong>.'}
 function getCurrentDateTimeSpoken(){const n=new Date();const js=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];const ms=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];return'Nous sommes le '+js[n.getDay()]+' '+n.getDate()+' '+ms[n.getMonth()]+' '+n.getFullYear()+'. Il est '+String(n.getHours()).padStart(2,'0')+' heures '+String(n.getMinutes()).padStart(2,'0')+'.'}
-function toggleChat(){chatVisible=!chatVisible;if(chatVisible){chat.classList.add('visible');chatToggleBtn.classList.add('open');chatToggleBtn.innerHTML='<span class="toggle-icon">▼</span> MASQUER LE DIALOGUE'}else{chat.classList.remove('visible');chatToggleBtn.classList.remove('open');chatToggleBtn.innerHTML='<span class="toggle-icon">▼</span> AFFICHER LE DIALOGUE'}}
-function addMsg(html,isUser){const d=document.createElement('div');d.className=isUser?'msg user':'msg jarvis';d.innerHTML=isUser?'<div class="text">'+html+'</div>':'<div class="avatar">AT4</div><div class="text">'+html+'</div>';typing.parentNode.insertBefore(d,typing);chat.scrollTop=chat.scrollHeight}
-function addLink(name,url){const ms=chat.querySelectorAll('.msg.jarvis');if(!ms.length)return;const t=ms[ms.length-1].querySelector('.text');if(t.querySelector('.action-link'))return;const a=document.createElement('a');a.className='action-link';a.href=url;a.target='_blank';a.innerHTML='⟶ Ouvrir '+name+' ↗';t.appendChild(document.createElement('br'));t.appendChild(a)}
-function showTyping(){typing.classList.add('active');chat.scrollTop=chat.scrollHeight}
-function hideTyping(){typing.classList.remove('active')}
+function toggleChat(){const c=document.getElementById('chat');const b=document.getElementById('chatToggleBtn');chatVisible=!chatVisible;if(chatVisible){c.classList.add('visible');b.classList.add('open');b.innerHTML='<span class="toggle-icon">▼</span> MASQUER LE DIALOGUE'}else{c.classList.remove('visible');b.classList.remove('open');b.innerHTML='<span class="toggle-icon">▼</span> AFFICHER LE DIALOGUE'}}
+function addMsg(html,isUser){const c=document.getElementById('chat');const t=document.getElementById('typing');const d=document.createElement('div');d.className=isUser?'msg user':'msg jarvis';d.innerHTML=isUser?'<div class="text">'+html+'</div>':'<div class="avatar">AT4</div><div class="text">'+html+'</div>';t.parentNode.insertBefore(d,t);c.scrollTop=c.scrollHeight}
+function addLink(name,url){const c=document.getElementById('chat');const ms=c.querySelectorAll('.msg.jarvis');if(!ms.length)return;const t=ms[ms.length-1].querySelector('.text');if(t.querySelector('.action-link'))return;const a=document.createElement('a');a.className='action-link';a.href=url;a.target='_blank';a.innerHTML='⟶ Ouvrir '+name+' ↗';t.appendChild(document.createElement('br'));t.appendChild(a)}
+function showTyping(){const t=document.getElementById('typing');const c=document.getElementById('chat');t.classList.add('active');c.scrollTop=c.scrollHeight}
+function hideTyping(){document.getElementById('typing').classList.remove('active')}
 function tileClick(name,url){const p=PROTOCOLS.find(x=>x.name===name);if(chatVisible){addMsg(name,true);showTyping();setTimeout(()=>{hideTyping();const m=p?p.msg:'Accès au module <strong>'+name+'</strong>.';addMsg(m);addLink(name,url)},900)}const cm=p?p.msg.replace(/<[^>]*>/g,''):'Accès au module '+name+'.';speak(cm);window.open(url,'_blank')}
 function matchProtocol(text){const l=text.toLowerCase();for(let i=0;i<PROTOCOLS.length;i++){const p=PROTOCOLS[i];if(p.kw.some(k=>l.includes(k)))return p}return null}
 function sendMsg(){const i=document.getElementById('userInput');const v=i.value.trim();if(!v)return;i.value='';processInput(v,true)}
 function processInput(text,fromInput){if(processingVoice&&!fromInput)return;if(!fromInput)processingVoice=true;if(chatVisible||fromInput){addMsg(text,true);showTyping()}const r=getResponse(text);if(r.speakText&&r.speakText!==lastResponseText){lastResponseText=r.speakText;speak(r.speakText)}else if(r.speakText&&r.speakText===lastResponseText&&!fromInput){processingVoice=false;return}else if(r.speakText){speak(r.speakText);lastResponseText=r.speakText}if(chatVisible||fromInput){setTimeout(()=>{hideTyping();addMsg(r.msg);if(r.url&&r.name){addLink(r.name,r.url);if(r.openUrl)setTimeout(()=>window.open(r.url,'_blank'),300)}},1200)}else if(r.url&&r.name&&r.openUrl){setTimeout(()=>window.open(r.url,'_blank'),300)}if(!fromInput)setTimeout(()=>{processingVoice=false},2000)}
 function getResponse(text){const l=text.toLowerCase().trim();if(l===lastRecognizedText&&!chatVisible)return{msg:'',speakText:''};lastRecognizedText=l;if(l.includes('asalam')||l.includes('salam')||l.includes('assalam')||l.includes('salam alaykoum')||l.includes('as salam')||l.includes('salam aleykoum')||l.includes('salem')){const m='<strong>Wa aleykoum salam</strong>. Je suis à votre écoute.';return{msg:m,speakText:'Wa aleykoum salam. Je suis à votre écoute.'}}if(l==='bonjour'||l.startsWith('bonjour ')){const m='<strong>Bonjour</strong>, ravie de me rendre utile. Que puis-je pour vous ?';return{msg:m,speakText:'Bonjour, ravie de me rendre utile. Que puis-je pour vous ?'}}if(l==='salut'||l.startsWith('salut ')||l==='hey'||l==='coucou'||l==='hello'){const m='<strong>Hey boss</strong> ! Dites-moi ce dont vous avez besoin.';return{msg:m,speakText:'Hey boss. Dites-moi ce dont vous avez besoin.'}}if(l==='bonsoir'||l.startsWith('bonsoir ')){const m='<strong>Bonsoir</strong>, je suis à votre service.';return{msg:m,speakText:'Bonsoir, je suis à votre service.'}}if(l==='merci'||l==='merci beaucoup'||l.startsWith('merci ')){const m='<strong>Je vous en prie</strong>. À votre service.';return{msg:m,speakText:'Je vous en prie. À votre service.'}}if(l.includes('créateur')||l.includes('createur')||l.includes('maître')||l.includes('maitre')||l.includes('développeur')||l.includes('developpeur')||l.includes('qui t\'a fait')||l.includes('qui t\'as fait')||l.includes('qui ta fait')){const m='👤 Mon créateur est <strong>Zaber Mohammad</strong>, conducteur moniteur formateur... et plus si affinité !';return{msg:m,speakText:'Mon créateur est Zabèr Mohammad, conducteur moniteur formateur, et plus si affinité.'}}if(l.includes('répète')||l.includes('repete')||l.includes('redis')||l.includes('répéter')||l.includes('repeter')){if(lastRecognizedText&&lastRecognizedText.length>2&&!lastRecognizedText.includes('répète')&&!lastRecognizedText.includes('repete')&&!lastRecognizedText.includes('redis')&&!lastRecognizedText.includes('répéter')&&!lastRecognizedText.includes('repeter')){return getResponse(lastRecognizedText)}const m='Je n\'ai rien à répéter. Donnez-moi une nouvelle instruction.';return{msg:m,speakText:'Je n\'ai rien à répéter. Donnez-moi une nouvelle instruction.'}}if(l.includes('date')||l.includes('heure')||l.includes('jour')||l.includes('temps')||l.includes('quelle heure')||l.includes('quel jour')){const m=getCurrentDateTime();const s=getCurrentDateTimeSpoken();return{msg:m,speakText:s}}const p=matchProtocol(l);if(p){const cm=p.msg.replace(/<[^>]*>/g,'');return{msg:p.msg,speakText:cm,url:p.url,name:p.name,openUrl:true}}const m='Je n\'ai pas identifié de protocole. Précisez votre problème — ex: <em>"frein isolé calcul vitesse"</em>, <em>"boîte chaude"</em>, <em>"porte bloquée"</em>...';const s='Je n\'ai pas identifié de protocole. Précisez votre problème.';return{msg:m,speakText:s}}
-// ==================== COMMANDE VOCALE ====================
-async function toggleVoice(){if(listening){listening=false;processingVoice=false;recognition&&recognition.stop();voiceHoloBtn.classList.remove('listening','speaking');voiceLabel.textContent='VOCAL T4';voiceLabel.style.color='rgba(0,200,255,0.8)';if(currentUtterance){synth.cancel();currentUtterance=null}lastResponseText='';return}if(!('webkitSpeechRecognition'in window)&&!('SpeechRecognition'in window)){const m='Reconnaissance vocale non disponible sur ce navigateur. Utilisez Chrome.';if(chatVisible)addMsg(m);speak('Reconnaissance vocale non disponible sur ce navigateur. Utilisez Chrome.');return}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});stream.getTracks().forEach(t=>t.stop())}catch(err){const m='❌ Accès au microphone refusé. Allez dans les paramètres de votre navigateur, autorisations, microphone, puis autoriser pour ce site.';if(chatVisible)addMsg(m);speak('Accès au microphone refusé. Vérifiez les paramètres de votre navigateur.');return}const SR=window.SpeechRecognition||window.webkitSpeechRecognition;recognition=new SR();recognition.lang='fr-FR';recognition.continuous=true;recognition.interimResults=false;recognition.maxAlternatives=1;recognition.onstart=()=>{listening=true;voiceHoloBtn.classList.add('listening');voiceHoloBtn.classList.remove('speaking');voiceLabel.textContent='ÉCOUTE...';voiceLabel.style.color='rgba(0,255,100,0.9)'};recognition.onresult=(e)=>{const t=e.results[e.results.length-1][0].transcript.trim();if(!t||t.length<1)return;if(t===lastRecognizedText)return;processInput(t,false);document.getElementById('userInput').value=''};recognition.onerror=(e)=>{if(e.error==='not-allowed'){const m='❌ Microphone bloqué. Autorisez l\'accès dans les paramètres du navigateur puis réessayez.';if(chatVisible)addMsg(m);speak('Microphone bloqué. Autorisez l\'accès dans les paramètres du navigateur.');listening=false;processingVoice=false;voiceHoloBtn.classList.remove('listening','speaking');voiceLabel.textContent='VOCAL T4';voiceLabel.style.color='rgba(0,200,255,0.8)'}else if(e.error==='no-speech'){}else if(e.error==='aborted'){}else{console.log('Erreur micro:',e.error)}};recognition.onend=()=>{if(listening){try{recognition.start()}catch(e){listening=false;processingVoice=false;voiceHoloBtn.classList.remove('listening','speaking');voiceLabel.textContent='VOCAL T4';voiceLabel.style.color='rgba(0,200,255,0.8)'}}else{voiceHoloBtn.classList.remove('listening','speaking');voiceLabel.textContent='VOCAL T4';voiceLabel.style.color='rgba(0,200,255,0.8)'}};recognition.start()}
+// ==================== COMMANDE VOCALE - MICRO RESTE ACTIF ====================
+async function startVoice(){
+  if(!('webkitSpeechRecognition'in window)&&!('SpeechRecognition'in window)){
+    const m='Reconnaissance vocale non disponible sur ce navigateur. Utilisez Chrome.';
+    if(chatVisible)addMsg(m);
+    speak('Reconnaissance vocale non disponible sur ce navigateur. Utilisez Chrome.');
+    return;
+  }
+  try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});stream.getTracks().forEach(t=>t.stop())}
+  catch(err){
+    const m='❌ Accès au microphone refusé. Allez dans les paramètres de votre navigateur, autorisations, microphone, puis autoriser pour ce site.';
+    if(chatVisible)addMsg(m);
+    speak('Accès au microphone refusé. Vérifiez les paramètres de votre navigateur.');
+    return;
+  }
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recognition=new SR();
+  recognition.lang='fr-FR';
+  recognition.continuous=true;
+  recognition.interimResults=false;
+  recognition.maxAlternatives=1;
+  const vb=document.getElementById('voiceHoloBtn');
+  const vl=document.getElementById('voiceLabel');
+  recognition.onstart=()=>{
+    listening=true;
+    vb.classList.add('listening');
+    vb.classList.remove('speaking');
+    vl.textContent='ÉCOUTE...';
+    vl.style.color='rgba(0,255,100,0.9)';
+  };
+  recognition.onresult=(e)=>{
+    const t=e.results[e.results.length-1][0].transcript.trim();
+    if(!t||t.length<1)return;
+    if(t===lastRecognizedText)return;
+    processInput(t,false);
+    document.getElementById('userInput').value='';
+  };
+  recognition.onerror=(e)=>{
+    if(e.error==='not-allowed'){
+      const m='❌ Microphone bloqué. Autorisez l\'accès dans les paramètres du navigateur puis réessayez.';
+      if(chatVisible)addMsg(m);
+      speak('Microphone bloqué. Autorisez l\'accès dans les paramètres du navigateur.');
+      listening=false;processingVoice=false;
+      vb.classList.remove('listening','speaking');
+      vl.textContent='VOCAL T4';vl.style.color='rgba(0,200,255,0.8)';
+    }
+  };
+  recognition.onend=()=>{
+    if(listening){
+      try{recognition.start()}
+      catch(e){
+        listening=false;processingVoice=false;
+        vb.classList.remove('listening','speaking');
+        vl.textContent='VOCAL T4';vl.style.color='rgba(0,200,255,0.8)';
+      }
+    }else{
+      vb.classList.remove('listening','speaking');
+      vl.textContent='VOCAL T4';vl.style.color='rgba(0,200,255,0.8)';
+    }
+  };
+  recognition.start();
+}
 // ==================== ÉVÉNEMENTS ====================
-document.getElementById('chatToggleBtn').addEventListener('click',toggleChat);
-console.log('✅ Assistant T4 - Prêt - Créé par Zaber Mohammad');
+(function init(){
+  document.getElementById('chatToggleBtn').addEventListener('click',toggleChat);
+  document.getElementById('sendBtn').addEventListener('click',sendMsg);
+  document.getElementById('userInput').addEventListener('keydown',function(e){if(e.key==='Enter')sendMsg()});
+  // Boutons de la grille
+  document.getElementById('tile-ios').addEventListener('click',function(){tileClick('iOS','https://sites.google.com/view/expert-ios/expert-ios')});
+  document.getElementById('tile-499').addEventListener('click',function(){tileClick('Page 499','https://sites.google.com/view/page-499/page-499')});
+  document.getElementById('tile-si').addEventListener('click',function(){tileClick('Guide SI','https://sites.google.com/view/guide-si/guide-pour-les-si')});
+  document.getElementById('tile-sam').addEventListener('click',function(){tileClick('Pose de SAM','https://sites.google.com/view/pose-de-sam/sam')});
+  document.getElementById('tile-porte').addEventListener('click',function(){tileClick('Porte Dualis','https://zbrfe.itch.io/condamner-une-porte-dualis')});
+  document.getElementById('tile-secours').addEventListener('click',function(){tileClick('Assistant Secours','https://zbrfe.itch.io/assistant-secours-t4')});
+  document.getElementById('tile-um').addEventListener('click',function(){tileClick('Assistant UM','https://zbrfe.itch.io/assistant-um-t4')});
+  document.getElementById('tile-bc').addEventListener('click',function(){tileClick('Boîte Chaude','https://sites.google.com/view/boite-chaude/boite-chaude')});
+  document.getElementById('tile-mti').addEventListener('click',function(){tileClick('MTI','https://sites.google.com/view/mtidualis/mti')});
+  document.getElementById('tile-cle').addEventListener('click',function(){tileClick('Clés Aiguilles','https://zbrfe.itch.io/cl-daiguille')});
+  document.getElementById('tile-code').addEventListener('click',function(){tileClick('Codes Accès','https://sites.google.com/view/codet4/code-dacces')});
+  document.getElementById('tile-astuce').addEventListener('click',function(){tileClick('Astuces','https://sites.google.com/view/les-gestes-qui-depannent/les-gestes-qui-depannent')});
+  document.getElementById('tile-esbly').addEventListener('click',function(){tileClick('Conduite Esbly','https://sites.google.com/view/mode-conduite-esbly/mode-conduite-esbly')});
+  document.getElementById('tile-constat').addEventListener('click',function(){tileClick('Constat','https://sites.google.com/view/constat-t4/constat')});
+  document.getElementById('tile-bulletin').addEventListener('click',function(){tileClick('Bulletin ADV/SI','https://sites.google.com/view/bulletin-adv-si/bulletin-de-franchissement-de-si')});
+  // Bouton micro - reste actif après premier appui
+  document.getElementById('voiceHoloBtn').addEventListener('click',function(){
+    if(!listening){
+      startVoice();
+    }
+    // Si déjà en écoute, on ne fait rien (le micro reste actif)
+  });
+  // Démarrer le micro automatiquement au chargement
+  startVoice();
+  console.log('✅ Assistant T4 - Prêt - Créé par Zaber Mohammad');
+})();
 </script>
 </body>
 </html>
